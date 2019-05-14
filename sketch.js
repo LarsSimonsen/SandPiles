@@ -1,10 +1,13 @@
-const WIDTH = 800;
-const HEIGHT = 800;
+const WIDTH = 1200;
+const HEIGHT = 1200;
 
 let sandPile;
 let newPile;
 let img;
+let stopAddingSand = false;
 let isDone = false;
+const stopAddingSandAt = 8;
+const isDoneAt = 2;
 let firstX;
 let firstY;
 
@@ -41,6 +44,7 @@ function setup() {
 function addSand() {
   sandPile[Math.floor(HEIGHT / 2)][Math.floor(WIDTH / 2)] = 127;
 }
+
 
 function render() {
   let xlength = sandPile[0].length;
@@ -91,20 +95,24 @@ function topple() {
         newPile[y + 1][x] += 1;
         toppled = true;
         if (x === firstX) {
-          expandedX = true;
-          if (x === 2) {
-            isDone = true;
-          }
+            expandedX = true;
+            if (x === stopAddingSandAt) {
+                stopAddingSand = true;
+            } else if (x === isDoneAt) {
+                isDone = true;
+            }
         }
         if (y === firstY) {
-          expandedY = true;
-          if (y === 2) {
-            isDone = true;
+            expandedY = true;
+            if (y === stopAddingSandAt) {
+                stopAddingSand = true;
+            } else if (y === isDoneAt) {
+                isDone = true;
+            }
           }
         }
       }
     }
-  }
   {
     const oldPile = sandPile;
     sandPile = newPile;
@@ -124,28 +132,15 @@ function topple() {
   }
 }
 
-function clickHandle() {
-  /*
-  if (mouseX >= 0 && mouseX < width && mouseY >= 0 && mouseY < height && mouseIsPressed) {
-    let x = Math.floor(mouseX / SIZE);
-    let y = Math.floor(mouseY / SIZE);
-    sandPile[x + WIDTH * y] += 1;
-  }
-  */
-  if (mouseIsPressed) {
-    addSand();
-  }
-}
-
 function draw() {
   render();
-  for (let i = 0; i < 1000 && !isDone; i++) {
+  for (let i = 0; i < 1000 && isDone === false; i++) {
+    if (stopAddingSand === false) {
+        addSand();
+    }
     topple();
-    addSand();
   }
-  if (isDone) {
-    //noLoop();
+  if (isDone === true) {
+    noLoop();
   }
-
-  //clickHandle();
 }
